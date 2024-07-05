@@ -1,1 +1,60 @@
 
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+
+public class PasswordGenerator {
+    private static final String UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final String LOWER = "abcdefghijklmnopqrstuvwxyz";
+    private static final String DIGITS = "0123456789";
+    private static final String SPECIAL = "!@#$%^&*_=+-/";
+
+    private static final int PASSWORD_LENGTH = 12; // Default password length
+
+    public static void main(String[] args) {
+        String password = generatePassword(PASSWORD_LENGTH);
+        System.out.println("Generated Password: " + password);
+    }
+
+    public static String generatePassword(int length) {
+        if (length <= 0) {
+            throw new IllegalArgumentException("Password length must be greater than 0.");
+        }
+
+        List<Character> chars = new ArrayList<>();
+        chars.addAll(getRandomChars(UPPER, 2));   // At least 2 uppercase letters
+        chars.addAll(getRandomChars(LOWER, 2));   // At least 2 lowercase letters
+        chars.addAll(getRandomChars(DIGITS, 2));  // At least 2 digits
+        chars.addAll(getRandomChars(SPECIAL, 2)); // At least 2 special characters
+
+        SecureRandom random = new SecureRandom();
+        for (int i = chars.size(); i < length; i++) {
+            String source = getRandomSource(random);
+            chars.add(source.charAt(random.nextInt(source.length())));
+        }
+
+        Collections.shuffle(chars);
+        StringBuilder password = new StringBuilder();
+        for (char c : chars) {
+            password.append(c);
+        }
+
+        return password.toString();
+    }
+
+    private static List<Character> getRandomChars(String source, int count) {
+        SecureRandom random = new SecureRandom();
+        List<Character> chars = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            chars.add(source.charAt(random.nextInt(source.length())));
+        }
+        return chars;
+    }
+
+    private static String getRandomSource(Random random) {
+        String[] sources = { UPPER, LOWER, DIGITS, SPECIAL };
+        return sources[random.nextInt(sources.length)];
+    }
+}
